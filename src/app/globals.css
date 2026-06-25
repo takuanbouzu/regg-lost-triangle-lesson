@@ -145,6 +145,17 @@ body {
   #gfnav .brand { font-size: 12px; }
 }
 
+/* footer links */
+.footer-link {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--tx-faint);
+  text-decoration: none;
+  transition: color .16s var(--ease);
+}
+.footer-link:hover { color: var(--tx); }
+
 /* confidence tags */
 .conf {
   display: inline-block;

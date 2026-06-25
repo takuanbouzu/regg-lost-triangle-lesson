@@ -2,6 +2,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect } from 'react';
+import SiteNav from '@/components/SiteNav';
+import SiteFooter from '@/components/SiteFooter';
 
 export default function MathematicsPage() {
   useEffect(() => {
@@ -41,12 +43,7 @@ export default function MathematicsPage() {
         }
       `}</style>
 
-      {/* nav */}
-      <nav id="gfnav">
-        <Link className="brand" href="/">Gregg Fleishman</Link>
-        <Link className="navlink" href="/lost-triangle">Geometry Lesson</Link>
-        <Link className="navlink active" href="/mathematics">The Lost Triangle</Link>
-      </nav>
+      <SiteNav active="math" />
 
       {/* HERO */}
       <header className="sec" style={{ paddingTop: '96px' }}>
@@ -157,21 +154,18 @@ export default function MathematicsPage() {
               </div>
             </div>
           </div>
-          <div data-reveal style={{ marginTop: '44px', textAlign: 'center' }}>
+          <div data-reveal style={{ marginTop: '44px', display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <Link href="/lost-triangle" style={{ display: 'inline-block', padding: '15px 36px', background: 'var(--accent)', color: 'var(--bg)', fontSize: '12px', fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none', borderRadius: 'var(--radius-sm)' }}>
               Open the interactive lesson
+            </Link>
+            <Link href="/gallery" style={{ display: 'inline-block', padding: '15px 36px', border: '1px solid var(--border-strong)', color: 'var(--tx-dim)', fontSize: '12px', fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', textDecoration: 'none', borderRadius: 'var(--radius-sm)' }}>
+              View the gallery
             </Link>
           </div>
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer style={{ background: '#0A0A0A', padding: '30px 56px' }}>
-        <div className="wrap" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '13px', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Gregg Fleishman</div>
-          <div style={{ fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--tx-faint)' }}>The Lost Triangle · Mathematics</div>
-        </div>
-      </footer>
+      <SiteFooter />
     </>
   );
 }

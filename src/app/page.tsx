@@ -13,6 +13,8 @@ export default function Home() {
         <span className="brand">Gregg Fleishman</span>
         <Link className="navlink" href="/lost-triangle">Geometry Lesson</Link>
         <Link className="navlink" href="/mathematics">The Lost Triangle</Link>
+        <Link className="navlink" href="/gallery">Gallery</Link>
+        <Link className="navlink" href="/about">About</Link>
       </nav>
 
       {/* Bottom-left title + CTAs over gradient scrim */}
