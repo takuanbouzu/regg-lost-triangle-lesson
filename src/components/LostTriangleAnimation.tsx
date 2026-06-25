@@ -4,8 +4,34 @@ import React from 'react';
 type XYZ = [number, number, number];
 type XY  = [number, number];
 
+function ChapterRow({ startTime, title, color, isActive, onClick }: {
+  startTime: number; title: string; color: string; isActive: boolean; onClick: () => void;
+}) {
+  const [hovered, setHovered] = React.useState(false);
+  const timeStr = `${Math.floor(startTime / 60)}:${String(startTime % 60).padStart(2, '0')}`;
+  return (
+    <div
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        padding: '10px 18px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        cursor: 'pointer',
+        background: isActive ? 'rgba(200,169,110,.10)' : hovered ? 'rgba(240,237,232,.05)' : 'transparent',
+        borderLeft: isActive ? '2px solid #C8A96E' : '2px solid transparent',
+      }}
+    >
+      <span style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 13, color: isActive ? color : '#8A8480', fontWeight: isActive ? 500 : 400 }}>{title}</span>
+      <span style={{ fontSize: 11, color: '#4A4643', fontVariantNumeric: 'tabular-nums' }}>{timeStr}</span>
+    </div>
+  );
+}
+
 interface Props { autoplay?: boolean; heroMode?: boolean; }
-interface State { t: number; playing: boolean; }
+interface State { t: number; playing: boolean; showChapters: boolean; }
 
 export default class LostTriangleAnimation extends React.Component<Props, State> {
   END = 88;
@@ -35,10 +61,11 @@ export default class LostTriangleAnimation extends React.Component<Props, State>
   _fit?: () => void;
   _last = 0;
   _sv   = 0;
+  _kbd: ((e: KeyboardEvent) => void) | undefined;
 
   constructor(props: Props) {
     super(props);
-    this.state = { t: 0, playing: false };
+    this.state = { t: 0, playing: false, showChapters: false };
 
     const g = this.GU, r2 = Math.sqrt(2);
     this.P = {
@@ -107,11 +134,21 @@ export default class LostTriangleAnimation extends React.Component<Props, State>
       this._raf = requestAnimationFrame(loop);
     };
     this._raf = requestAnimationFrame(loop);
+
+    this._kbd = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement) return;
+      if (e.code === 'Space') { e.preventDefault(); this.setState(s => ({ playing: !s.playing })); }
+      if (e.code === 'ArrowRight') this.setState(s => ({ t: Math.min(s.t + 5, this.END), playing: false }));
+      if (e.code === 'ArrowLeft')  this.setState(s => ({ t: Math.max(s.t - 5, 0), playing: false }));
+      if (e.code === 'KeyR') this.setState({ t: 0, playing: true });
+    };
+    window.addEventListener('keydown', this._kbd);
   }
 
   componentWillUnmount() {
     cancelAnimationFrame(this._raf);
     if (this._fit) window.removeEventListener('resize', this._fit);
+    if (this._kbd) window.removeEventListener('keydown', this._kbd);
   }
 
   fit() {
@@ -422,6 +459,7 @@ export default class LostTriangleAnimation extends React.Component<Props, State>
     const mm = Math.floor(t / 60), ss = Math.floor(t % 60);
     const dm = Math.floor(this.END / 60), ds = Math.floor(this.END % 60);
     const playing = this.state.playing;
+    const { showChapters } = this.state;
 
     const heroMode = this.props.heroMode;
 
@@ -435,6 +473,34 @@ export default class LostTriangleAnimation extends React.Component<Props, State>
           <svg viewBox="0 0 1920 1080" width="100%" height="100%" style={{ position: 'absolute', inset: 0, display: 'block' }}>
             {k}
           </svg>
+
+          {/* chapter jump panel — hidden in hero mode */}
+          {!heroMode && (
+            <>
+              <button
+                onClick={() => this.setState(s => ({ showChapters: !s.showChapters }))}
+                style={{ position: 'absolute', top: 176, left: 72, padding: '5px 14px', background: 'rgba(18,18,18,.7)', backdropFilter: 'blur(8px)', border: '1px solid rgba(240,237,232,.08)', borderRadius: 20, fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#8A8480', cursor: 'pointer', fontFamily: "'Space Grotesk',sans-serif" }}
+              >{showChapters ? 'Chapters ▴' : 'Chapters ▾'}</button>
+              {showChapters && (
+                <div style={{ position: 'absolute', top: 210, left: 72, width: 280, background: 'rgba(13,13,13,.88)', backdropFilter: 'blur(12px)', border: '1px solid rgba(240,237,232,.08)', borderRadius: 12, padding: '10px 0', overflow: 'hidden' }}>
+                  {chapters.map(([startTime, title, color], idx) => {
+                    const nextStart = idx + 1 < chapters.length ? chapters[idx + 1][0] : Infinity;
+                    const isActive = t >= startTime && t < nextStart;
+                    return (
+                      <ChapterRow
+                        key={startTime}
+                        startTime={startTime}
+                        title={title}
+                        color={color}
+                        isActive={isActive}
+                        onClick={() => this.setState({ t: startTime, playing: true, showChapters: false })}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+            </>
+          )}
 
           {/* transport bar — hidden in hero mode */}
           {!heroMode && (
@@ -464,6 +530,7 @@ export default class LostTriangleAnimation extends React.Component<Props, State>
               <span style={{ fontSize: 12, color: '#8A8480', fontVariantNumeric: 'tabular-nums', letterSpacing: '0.04em' }}>
                 {dm}:{String(ds).padStart(2, '0')}
               </span>
+              <span style={{ fontSize: 10, color: '#4A4643', letterSpacing: '0.08em', textTransform: 'uppercase', marginLeft: 8 }}>Space · ← →</span>
             </div>
           )}
         </div>
