@@ -4,7 +4,7 @@ import React from 'react';
 type XYZ = [number, number, number];
 type XY  = [number, number];
 
-interface Props { autoplay?: boolean; }
+interface Props { autoplay?: boolean; heroMode?: boolean; }
 interface State { t: number; playing: boolean; }
 
 export default class LostTriangleAnimation extends React.Component<Props, State> {
@@ -67,11 +67,15 @@ export default class LostTriangleAnimation extends React.Component<Props, State>
   }
 
   componentDidMount() {
-    const saved = parseFloat(localStorage.getItem('lt_t') || '');
-    if (!isNaN(saved) && saved > 0 && saved < this.END) {
-      this.setState({ t: saved });
-    } else if (this.props.autoplay) {
+    if (this.props.heroMode) {
       this.setState({ playing: true });
+    } else {
+      const saved = parseFloat(localStorage.getItem('lt_t') || '');
+      if (!isNaN(saved) && saved > 0 && saved < this.END) {
+        this.setState({ t: saved });
+      } else if (this.props.autoplay) {
+        this.setState({ playing: true });
+      }
     }
 
     this.fit();
@@ -85,12 +89,17 @@ export default class LostTriangleAnimation extends React.Component<Props, State>
       if (this.state.playing) {
         let nt = this.state.t + dt;
         if (nt >= this.END) {
-          nt = this.END;
-          this.setState({ t: nt, playing: false });
+          if (this.props.heroMode) {
+            nt = 0;
+            this.setState({ t: nt });
+          } else {
+            nt = this.END;
+            this.setState({ t: nt, playing: false });
+          }
         } else {
           this.setState({ t: nt });
         }
-        if (Math.floor(nt * 4) !== this._sv) {
+        if (!this.props.heroMode && Math.floor(nt * 4) !== this._sv) {
           this._sv = Math.floor(nt * 4);
           localStorage.setItem('lt_t', nt.toFixed(2));
         }
@@ -414,8 +423,10 @@ export default class LostTriangleAnimation extends React.Component<Props, State>
     const dm = Math.floor(this.END / 60), ds = Math.floor(this.END % 60);
     const playing = this.state.playing;
 
+    const heroMode = this.props.heroMode;
+
     return (
-      <div style={{ position: 'fixed', inset: 0, background: '#0B0B0B', overflow: 'hidden' }}>
+      <div style={{ position: heroMode ? 'absolute' : 'fixed', inset: 0, background: '#0B0B0B', overflow: 'hidden' }}>
         <div
           ref={(el) => { this.stage = el; if (el) this.fit(); }}
           style={{ position: 'absolute', left: '50%', top: '50%', width: '1920px', height: '1080px', transform: 'translate(-50%,-50%)', transformOrigin: 'center center' }}
@@ -425,34 +436,36 @@ export default class LostTriangleAnimation extends React.Component<Props, State>
             {k}
           </svg>
 
-          {/* transport bar */}
-          <div style={{ position: 'absolute', left: '50%', bottom: '34px', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', gap: '18px', padding: '11px 20px', borderRadius: '14px', background: 'rgba(18,18,18,.66)', backdropFilter: 'blur(10px)', border: '1px solid rgba(240,237,232,.07)', boxShadow: '0 8px 30px rgba(0,0,0,.5)', fontFamily: "'Space Grotesk',sans-serif" }}>
-            <button
-              onClick={() => { if (this.state.t >= this.END) this.setState({ t: 0, playing: true }); else this.setState(s => ({ playing: !s.playing })); }}
-              style={{ width: 40, height: 40, border: 'none', borderRadius: 10, background: 'rgba(200,169,110,.16)', color: '#F0EDE8', fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            >{playing ? '❚❚' : '►'}</button>
-            <button
-              onClick={() => this.setState({ t: 0, playing: true })}
-              style={{ width: 36, height: 36, border: 'none', borderRadius: 10, background: 'rgba(240,237,232,.06)', color: '#8A8480', fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            >↻</button>
-            <span style={{ fontSize: 12, color: '#8A8480', fontVariantNumeric: 'tabular-nums', minWidth: 40, textAlign: 'right', letterSpacing: '0.04em' }}>
-              {mm}:{String(ss).padStart(2, '0')}
-            </span>
-            <input
-              className="lt-scrub"
-              type="range" min={0} max={1000}
-              value={Math.round((t / this.END) * 1000)}
-              onChange={(e) => {
-                const v = (parseFloat(e.target.value) / 1000) * this.END;
-                this.setState({ t: v, playing: false });
-                localStorage.setItem('lt_t', v.toFixed(2));
-              }}
-              style={{ width: 360 }}
-            />
-            <span style={{ fontSize: 12, color: '#8A8480', fontVariantNumeric: 'tabular-nums', letterSpacing: '0.04em' }}>
-              {dm}:{String(ds).padStart(2, '0')}
-            </span>
-          </div>
+          {/* transport bar — hidden in hero mode */}
+          {!heroMode && (
+            <div style={{ position: 'absolute', left: '50%', bottom: '34px', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', gap: '18px', padding: '11px 20px', borderRadius: '14px', background: 'rgba(18,18,18,.66)', backdropFilter: 'blur(10px)', border: '1px solid rgba(240,237,232,.07)', boxShadow: '0 8px 30px rgba(0,0,0,.5)', fontFamily: "'Space Grotesk',sans-serif" }}>
+              <button
+                onClick={() => { if (this.state.t >= this.END) this.setState({ t: 0, playing: true }); else this.setState(s => ({ playing: !s.playing })); }}
+                style={{ width: 40, height: 40, border: 'none', borderRadius: 10, background: 'rgba(200,169,110,.16)', color: '#F0EDE8', fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >{playing ? '❚❚' : '►'}</button>
+              <button
+                onClick={() => this.setState({ t: 0, playing: true })}
+                style={{ width: 36, height: 36, border: 'none', borderRadius: 10, background: 'rgba(240,237,232,.06)', color: '#8A8480', fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              >↻</button>
+              <span style={{ fontSize: 12, color: '#8A8480', fontVariantNumeric: 'tabular-nums', minWidth: 40, textAlign: 'right', letterSpacing: '0.04em' }}>
+                {mm}:{String(ss).padStart(2, '0')}
+              </span>
+              <input
+                className="lt-scrub"
+                type="range" min={0} max={1000}
+                value={Math.round((t / this.END) * 1000)}
+                onChange={(e) => {
+                  const v = (parseFloat(e.target.value) / 1000) * this.END;
+                  this.setState({ t: v, playing: false });
+                  localStorage.setItem('lt_t', v.toFixed(2));
+                }}
+                style={{ width: 360 }}
+              />
+              <span style={{ fontSize: 12, color: '#8A8480', fontVariantNumeric: 'tabular-nums', letterSpacing: '0.04em' }}>
+                {dm}:{String(ds).padStart(2, '0')}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     );
