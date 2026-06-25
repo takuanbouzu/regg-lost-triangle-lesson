@@ -1,11 +1,16 @@
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import SiteNav from '@/components/SiteNav';
 import SiteFooter from '@/components/SiteFooter';
 
 export default function GalleryPage() {
+  const [lightbox, setLightbox] = useState<{ src: string; alt: string; caption: string; sub: string } | null>(null);
+
+  const openLightbox = (src: string, alt: string, caption: string, sub: string) => setLightbox({ src, alt, caption, sub });
+  const closeLightbox = () => setLightbox(null);
+
   useEffect(() => {
     const io = new IntersectionObserver(
       (entries) => {
@@ -17,6 +22,12 @@ export default function GalleryPage() {
     );
     document.querySelectorAll('[data-reveal]').forEach((el) => io.observe(el));
     return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closeLightbox(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, []);
 
   return (
@@ -92,13 +103,19 @@ export default function GalleryPage() {
               </p>
             </div>
             <div data-reveal className="plate dark">
-              <Image
-                src="/assets/drawings/fleishman-sequence-poster.png"
-                alt="The Fleishman Sequence — original plate by Gregg Fleishman"
-                width={900}
-                height={700}
-                style={{ width: '100%', height: 'auto' }}
-              />
+              <button
+                onClick={() => openLightbox('/assets/drawings/fleishman-sequence-poster.png', 'The Fleishman Sequence — original plate by Gregg Fleishman', 'The Fleishman Sequence · Original plate · 2017', 'A new root-triangle sequence including the Lost Triangle of three dimensions')}
+                style={{ display: 'block', width: '100%', border: 'none', padding: 0, background: 'none', cursor: 'zoom-in' }}
+                aria-label="View The Fleishman Sequence · Original plate · 2017 fullscreen"
+              >
+                <Image
+                  src="/assets/drawings/fleishman-sequence-poster.png"
+                  alt="The Fleishman Sequence — original plate by Gregg Fleishman"
+                  width={900}
+                  height={700}
+                  style={{ width: '100%', height: 'auto' }}
+                />
+              </button>
               <div className="cap">
                 <div className="t">The Fleishman Sequence · Original plate · 2017</div>
                 <div className="s">A new root-triangle sequence including the Lost Triangle of three dimensions</div>
@@ -120,26 +137,38 @@ export default function GalleryPage() {
           </div>
           <div data-reveal className="gal-pair">
             <div className="plate">
-              <Image
-                src="/assets/drawings/root-sequence.png"
-                alt="Root sequence construction — 1, root 2, root 3"
-                width={800}
-                height={600}
-                style={{ width: '100%', height: 'auto' }}
-              />
+              <button
+                onClick={() => openLightbox('/assets/drawings/root-sequence.png', 'Root sequence construction — 1, root 2, root 3', 'Root sequence · 1, √2, √3', 'The square roots, built one from the next')}
+                style={{ display: 'block', width: '100%', border: 'none', padding: 0, background: 'none', cursor: 'zoom-in' }}
+                aria-label="View Root sequence · 1, √2, √3 fullscreen"
+              >
+                <Image
+                  src="/assets/drawings/root-sequence.png"
+                  alt="Root sequence construction — 1, root 2, root 3"
+                  width={800}
+                  height={600}
+                  style={{ width: '100%', height: 'auto' }}
+                />
+              </button>
               <div className="cap">
                 <div className="t">Root sequence · 1, √2, √3</div>
                 <div className="s">The square roots, built one from the next</div>
               </div>
             </div>
             <div className="plate">
-              <Image
-                src="/assets/drawings/lost-triangle-template.png"
-                alt="Lost Triangle template with construction radii and angles"
-                width={800}
-                height={600}
-                style={{ width: '100%', height: 'auto' }}
-              />
+              <button
+                onClick={() => openLightbox('/assets/drawings/lost-triangle-template.png', 'Lost Triangle template with construction radii and angles', 'Lost Triangle template · 1 : √2 : √3', 'Construction radii R=1, √2, √3 · angles 55° and 35°')}
+                style={{ display: 'block', width: '100%', border: 'none', padding: 0, background: 'none', cursor: 'zoom-in' }}
+                aria-label="View Lost Triangle template · 1 : √2 : √3 fullscreen"
+              >
+                <Image
+                  src="/assets/drawings/lost-triangle-template.png"
+                  alt="Lost Triangle template with construction radii and angles"
+                  width={800}
+                  height={600}
+                  style={{ width: '100%', height: 'auto' }}
+                />
+              </button>
               <div className="cap">
                 <div className="t">Lost Triangle template · 1 : √2 : √3</div>
                 <div className="s">Construction radii R=1, √2, √3 · angles 55° and 35°</div>
@@ -153,13 +182,19 @@ export default function GalleryPage() {
       <section className="sec" style={{ background: '#0A0A0A' }}>
         <div className="wrap">
           <div data-reveal className="plate-xl">
-            <Image
-              src="/assets/drawings/lost-triangle-color.png"
-              alt="The Lost Triangle in color — original drawing by Gregg Fleishman"
-              width={1200}
-              height={900}
-              style={{ width: '100%', height: 'auto' }}
-            />
+            <button
+              onClick={() => openLightbox('/assets/drawings/lost-triangle-color.png', 'The Lost Triangle in color — original drawing by Gregg Fleishman', 'The Lost Triangle · in color', 'The square, the √2 fold, and the √3 hypotenuse')}
+              style={{ display: 'block', width: '100%', border: 'none', padding: 0, background: 'none', cursor: 'zoom-in' }}
+              aria-label="View The Lost Triangle · in color fullscreen"
+            >
+              <Image
+                src="/assets/drawings/lost-triangle-color.png"
+                alt="The Lost Triangle in color — original drawing by Gregg Fleishman"
+                width={1200}
+                height={900}
+                style={{ width: '100%', height: 'auto' }}
+              />
+            </button>
             <div className="cap">
               <div className="t">The Lost Triangle · in color</div>
               <div className="s">The square, the √2 fold, and the √3 hypotenuse</div>
@@ -183,26 +218,38 @@ export default function GalleryPage() {
           </div>
           <div data-reveal className="gal-pair">
             <div className="plate dark">
-              <Image
-                src="/assets/drawings/artwork-gold.png"
-                alt="Gregg Fleishman rhombic geometric artwork, gold tones"
-                width={800}
-                height={600}
-                style={{ width: '100%', height: 'auto' }}
-              />
+              <button
+                onClick={() => openLightbox('/assets/drawings/artwork-gold.png', 'Gregg Fleishman rhombic geometric artwork, gold tones', 'Rhombic study · gold', 'Original artwork')}
+                style={{ display: 'block', width: '100%', border: 'none', padding: 0, background: 'none', cursor: 'zoom-in' }}
+                aria-label="View Rhombic study · gold fullscreen"
+              >
+                <Image
+                  src="/assets/drawings/artwork-gold.png"
+                  alt="Gregg Fleishman rhombic geometric artwork, gold tones"
+                  width={800}
+                  height={600}
+                  style={{ width: '100%', height: 'auto' }}
+                />
+              </button>
               <div className="cap">
                 <div className="t">Rhombic study · gold</div>
                 <div className="s">Original artwork</div>
               </div>
             </div>
             <div className="plate">
-              <Image
-                src="/assets/drawings/artwork-bronze.png"
-                alt="Gregg Fleishman reflection geometric artwork, bronze tones"
-                width={800}
-                height={600}
-                style={{ width: '100%', height: 'auto' }}
-              />
+              <button
+                onClick={() => openLightbox('/assets/drawings/artwork-bronze.png', 'Gregg Fleishman reflection geometric artwork, bronze tones', 'Reflection study · bronze', 'Original artwork')}
+                style={{ display: 'block', width: '100%', border: 'none', padding: 0, background: 'none', cursor: 'zoom-in' }}
+                aria-label="View Reflection study · bronze fullscreen"
+              >
+                <Image
+                  src="/assets/drawings/artwork-bronze.png"
+                  alt="Gregg Fleishman reflection geometric artwork, bronze tones"
+                  width={800}
+                  height={600}
+                  style={{ width: '100%', height: 'auto' }}
+                />
+              </button>
               <div className="cap">
                 <div className="t">Reflection study · bronze</div>
                 <div className="s">Original artwork</div>
@@ -260,6 +307,55 @@ export default function GalleryPage() {
       </section>
 
       <SiteFooter />
+
+      {lightbox && (
+        <div
+          onClick={closeLightbox}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 200,
+            background: 'rgba(0,0,0,0.94)', backdropFilter: 'blur(8px)',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            padding: '40px 24px', cursor: 'zoom-out',
+          }}
+        >
+          {/* Close button */}
+          <button
+            onClick={closeLightbox}
+            style={{
+              position: 'absolute', top: 24, right: 32,
+              background: 'none', border: 'none', color: '#8A8480', fontSize: 28,
+              cursor: 'pointer', lineHeight: 1, padding: 0,
+            }}
+            aria-label="Close"
+          >×</button>
+
+          {/* Image */}
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{ maxWidth: 'min(1200px, 90vw)', maxHeight: '80vh', position: 'relative', cursor: 'default' }}
+          >
+            <img
+              src={lightbox.src}
+              alt={lightbox.alt}
+              style={{ display: 'block', maxWidth: '100%', maxHeight: '80vh', objectFit: 'contain', borderRadius: 8 }}
+            />
+          </div>
+
+          {/* Caption */}
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{ marginTop: 24, textAlign: 'center', cursor: 'default' }}
+          >
+            <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 15, color: '#F0EDE8', marginBottom: 6 }}>
+              {lightbox.caption}
+            </div>
+            <div style={{ fontSize: 12, color: '#8A8480' }}>{lightbox.sub}</div>
+            <div style={{ fontSize: 11, color: '#4A4643', marginTop: 12, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+              Press Esc to close
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
