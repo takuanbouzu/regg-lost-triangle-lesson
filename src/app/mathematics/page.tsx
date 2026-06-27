@@ -25,6 +25,7 @@ export default function MathematicsPage() {
         .wrap { max-width: 1180px; margin: 0 auto; }
         .sec  { padding: 120px 56px; border-bottom: 1px solid var(--hairline); }
         .eyebrow { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; }
+        .h1-hero { font-family: var(--font-display); font-weight: 800; font-size: clamp(42px, 7.5vw, 84px); line-height: 0.92; letter-spacing: -0.04em; margin: 0 0 26px; }
         .h2   { font-family: var(--font-display); font-weight: 800; font-size: 44px; line-height: 1.04; letter-spacing: -0.03em; margin: 0 0 22px; }
         .intro{ font-family: var(--font-editorial); font-style: italic; font-weight: 300; font-size: 23px; line-height: 1.6; color: var(--tx-dim); margin: 0; }
         .body { font-size: 15px; line-height: 1.85; color: var(--tx-dim); }
@@ -40,6 +41,7 @@ export default function MathematicsPage() {
           .split, .grid2 { grid-template-columns: 1fr; gap: 32px; }
           .sec  { padding: 80px 24px; }
           .h2   { font-size: 34px; }
+          .intro { font-size: 19px; }
         }
       `}</style>
 
@@ -50,7 +52,7 @@ export default function MathematicsPage() {
         <div className="wrap split">
           <div data-reveal>
             <div className="eyebrow">The Mathematics of Structure · What lies beneath</div>
-            <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '84px', lineHeight: 0.9, letterSpacing: '-0.04em', margin: '0 0 26px' }}>
+            <h1 className="h1-hero">
               The Lost<br />Triangle
             </h1>
             <p className="intro" style={{ maxWidth: '520px', marginBottom: '18px' }}>
